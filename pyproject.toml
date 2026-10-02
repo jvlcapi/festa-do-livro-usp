@@ -8,8 +8,8 @@ version = "0.1.0"
 description = "Catálogo de preços da Festa do Livro da USP gerado a partir das listas das editoras"
 requires-python = ">=3.11"
 dependencies = [
-    "pymupdf==1.28.2",
-    "pypdf==6.19.0",
+    "pymupdf==1.28.0",
+    "pypdf==6.14.2",
 ]
 
 [project.optional-dependencies]
@@ -20,3 +20,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+filterwarnings = ["ignore:builtin type .* has no __module__ attribute:DeprecationWarning"]

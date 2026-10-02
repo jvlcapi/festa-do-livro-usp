@@ -1,0 +1,60 @@
+name: Atualizar catálogo
+
+on:
+  workflow_dispatch:
+    inputs:
+      edicao:
+        description: 'Edição, por exemplo "28-festa-do-livro-da-usp". Deixe vazio para usar settings.json.'
+        required: false
+        default: ""
+  schedule:
+    # Todo dia às 6h de Brasília, de setembro a dezembro (as editoras atualizam as listas perto da Festa).
+    - cron: "0 9 * 9-12 *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-catalogo
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar
+        run: pip install -e '.[test]'
+
+      - name: Testes
+        run: pytest -q
+
+      - name: Gerar catálogo
+        env:
+          FESTA_EDITION: ${{ inputs.edicao }}
+        run: python -m festa_do_livro build
+
+      - name: Resumo da execução
+        run: |
+          relatorio=$(python -c 'import json; print(json.load(open("data/edicao-atual.json"))["relatorio"])')
+          cat "data/$relatorio" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Salvar no repositório se algo mudou
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Catálogo igual ao anterior; nada para salvar."
+            exit 0
+          fi
+          edicao=$(python -c 'import json; print(json.load(open("data/edicao-atual.json"))["edicao"])')
+          git commit -m "Atualiza catálogo da edição $edicao"
+          git push

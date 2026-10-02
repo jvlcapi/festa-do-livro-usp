@@ -1,0 +1,22 @@
+{
+ "data": [
+  {
+   "name": "L&PM Editores",
+   "description": "<p>Descrição</p>",
+   "url": "lpm",
+   "logo": "",
+   "price_list": "https://festadolivro.edusp.com.br/storage/event/publishers/publisher-405/publisher-price-list/lpm.pdf",
+   "email": "contato@example.com",
+   "site": "https://lpm.example.com/"
+  }
+ ],
+ "links": {
+  "next": null
+ },
+ "meta": {
+  "current_page": 2,
+  "last_page": 2,
+  "per_page": 2,
+  "total": 3
+ }
+}

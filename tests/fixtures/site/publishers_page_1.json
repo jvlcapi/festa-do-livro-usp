@@ -1,0 +1,31 @@
+{
+ "data": [
+  {
+   "name": "NewPOP Editora",
+   "description": "<p>Descrição</p>",
+   "url": "newpop",
+   "logo": "",
+   "price_list": "https://festadolivro.edusp.com.br/storage/event/publishers/publisher-273/publisher-price-list/newpop.pdf",
+   "email": "contato@example.com",
+   "site": "https://newpop.example.com/"
+  },
+  {
+   "name": "Pontes Editores",
+   "description": "<p>Descrição</p>",
+   "url": "pontes",
+   "logo": "",
+   "price_list": null,
+   "email": "contato@example.com",
+   "site": "https://pontes.example.com/"
+  }
+ ],
+ "links": {
+  "next": "https://festadolivro.edusp.com.br/api/v1/event-publishers?page=2"
+ },
+ "meta": {
+  "current_page": 1,
+  "last_page": 2,
+  "per_page": 2,
+  "total": 3
+ }
+}

@@ -1,0 +1,15 @@
+# Segredos locais: nunca versionar
+.env
+.env.*
+!.env.example
+
+# Ambiente e caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+
+# PDFs baixados das editoras (cache local, regenerável)
+cache/

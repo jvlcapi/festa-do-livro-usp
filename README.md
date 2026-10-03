@@ -115,3 +115,15 @@ tests/                        unit and regression tests, with real PDF fixtures
 ```
 
 The maintenance runbook for launch day (when the new edition's lists come out) is in the [Portuguese README](README.pt-BR.md#roteiro-do-dia-em-que-a-lista-sair).
+
+## License
+
+Code, site and documentation: [PolyForm Noncommercial 1.0.0](LICENSE.md). You may use, study, modify and share it for noncommercial purposes, as long as every copy keeps the license terms and the credit line:
+
+```
+Required Notice: Copyright 2026 João Vitor Lopes Capi (https://github.com/jvlcapi)
+```
+
+Commercial use requires written permission from the author.
+
+The book data (titles, authors and prices) comes from the price lists publishers post on the official fair website and is not covered by this license. The PDFs in `tests/fixtures/price_lists/` are those public price lists, kept only to test the parser.

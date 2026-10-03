@@ -113,3 +113,15 @@ src/festa_do_livro/
 site/                         site público (página, cache offline, ícone, manifesto)
 data/                         catálogos gerados (um diretório por edição)
 ```
+
+## Licença
+
+Código, site e documentação: [PolyForm Noncommercial 1.0.0](LICENSE.md). Você pode usar, estudar, modificar e compartilhar para fins não comerciais, desde que toda cópia mantenha os termos da licença e a linha de crédito:
+
+```
+Required Notice: Copyright 2026 João Vitor Lopes Capi (https://github.com/jvlcapi)
+```
+
+Uso comercial só com autorização por escrito do autor.
+
+Os dados dos livros (títulos, autores e preços) vêm das listas que as editoras publicam no site oficial da Festa e não estão cobertos por esta licença. Os PDFs em `tests/fixtures/price_lists/` são essas listas públicas, guardadas só para testar o leitor.

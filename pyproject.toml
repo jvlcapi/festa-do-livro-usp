@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,9 @@ name = "guia-nao-oficial-festa-do-livro"
 version = "0.1.0"
 description = "Guia não oficial da Festa do Livro da USP: catálogo de preços gerado a partir das listas das editoras"
 requires-python = ">=3.11"
+license = "PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE.md"]
+authors = [{ name = "João Vitor Lopes Capi" }]
 dependencies = [
     "pymupdf==1.28.0",
     "pypdf==6.14.2",

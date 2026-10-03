@@ -1,0 +1,54 @@
+name: Publicar site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "data/edicao-atual.json"
+      - "data/*/catalogo.json"
+      - "data/*/edicao.json"
+      - "src/festa_do_livro/site_assembly.py"
+      - ".github/workflows/publicar-site.yml"
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Quando chamado pelo "Atualizar catálogo", pega o commit que ele acabou de fazer.
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Montar o site com a edição atual
+        env:
+          PYTHONPATH: src
+        run: python -c 'from pathlib import Path; from festa_do_livro.site_assembly import assemble_site; print(assemble_site(Path("site"), Path("data"), Path("_site")))'
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: publicacao
+        uses: actions/deploy-pages@v4

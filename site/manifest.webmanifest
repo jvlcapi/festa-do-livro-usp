@@ -1,0 +1,14 @@
+{
+  "name": "Lista da Festa do Livro da USP",
+  "short_name": "Festa do Livro",
+  "description": "Monte sua lista de compras com os preços de feira de todas as editoras da Festa do Livro da USP.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#2a4fd1",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -11,6 +11,7 @@ from .fair_site import FairSite
 from .price_list_download import download_price_lists
 from .price_verification import report_markdown, verify_prices
 from .settings import load_settings
+from .site_assembly import assemble_site
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -67,6 +68,12 @@ def command_build(arguments) -> int:
     return 0
 
 
+def command_assemble_site(arguments) -> int:
+    pointer = assemble_site(PROJECT_ROOT / "site", Path(arguments.data), Path(arguments.output))
+    print(f"Site montado em {arguments.output} com a edição {pointer['edicao']}", file=sys.stderr)
+    return 0
+
+
 def main(argv=None) -> int:
     logging.getLogger("pypdf").setLevel(logging.ERROR)
     parser = argparse.ArgumentParser(prog="festa_do_livro", description="Catálogo de preços da Festa do Livro da USP")
@@ -77,8 +84,11 @@ def main(argv=None) -> int:
     build = subcommands.add_parser("build", help="baixa as listas e gera catálogo + relatório")
     build.add_argument("--cache", default=str(PROJECT_ROOT / "cache"), help="pasta para os PDFs baixados")
     build.add_argument("--output", default=str(PROJECT_ROOT / "data"), help="pasta de saída")
+    assemble = subcommands.add_parser("assemble-site", help="monta a pasta publicada no GitHub Pages")
+    assemble.add_argument("--data", default=str(PROJECT_ROOT / "data"), help="pasta com os catálogos gerados")
+    assemble.add_argument("--output", default=str(PROJECT_ROOT / "_site"), help="pasta de saída do site")
     arguments = parser.parse_args(argv)
-    commands = {"detect-edition": command_detect_edition, "build": command_build}
+    commands = {"detect-edition": command_detect_edition, "build": command_build, "assemble-site": command_assemble_site}
     return commands[arguments.command](arguments)
 
 

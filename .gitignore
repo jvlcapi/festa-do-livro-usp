@@ -13,3 +13,7 @@ build/
 
 # PDFs baixados das editoras (cache local, regenerável)
 cache/
+
+# Site montado localmente e configuração de preview
+_site/
+.claude/

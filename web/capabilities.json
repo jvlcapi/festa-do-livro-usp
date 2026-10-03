@@ -1,0 +1,11 @@
+{
+  "db": {
+    "rules": [
+      { "path": "", "read": "view", "write": "owner" },
+      { "path": "data/users/{self}", "write": "interact" },
+      { "path": "compartilhadas", "read": "view", "write": "owner" },
+      { "path": "compartilhadas/{self}", "write": "interact" }
+    ]
+  },
+  "user": { "scopes": ["profile"] }
+}

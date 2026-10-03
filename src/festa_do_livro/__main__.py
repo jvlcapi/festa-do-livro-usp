@@ -59,8 +59,9 @@ def command_build(arguments) -> int:
     methods = {index: parsed.method for index, parsed in parsed_by_index.items()}
     catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, separators=(",", ":")))
     (output_directory / "relatorio.md").write_text(report_markdown(catalog, report, download_problems, methods))
+    (output_directory / "edicao.json").write_text(json.dumps(catalog["evento"], ensure_ascii=False, indent=2) + "\n")
     (Path(arguments.output) / "edicao-atual.json").write_text(
-        json.dumps({"edicao": edition, "catalogo": f"{edition}/catalogo.json", "relatorio": f"{edition}/relatorio.md"}, ensure_ascii=False, indent=2) + "\n"
+        json.dumps({"edicao": edition, "catalogo": f"{edition}/catalogo.json", "edicaoInfo": f"{edition}/edicao.json", "relatorio": f"{edition}/relatorio.md"}, ensure_ascii=False, indent=2) + "\n"
     )
     print(f"{report.total_books} livros · {report.mismatch_count} preços a conferir · {catalog_path}", file=sys.stderr)
     return 0

@@ -2,7 +2,7 @@
 
 - Edição: `27-festa-do-livro-da-usp` · 26 e 30 de novembro
 - Editoras no site: 192
-- Livros no catálogo: 34771
+- Livros no catálogo: 34780
 - Livros sem ISBN (preço não conferível automaticamente): 797
 - Preços que não bateram com o PDF: 158
 
@@ -30,7 +30,7 @@
 | Atma Editora | 456 | tabela | 1 |
 | Autêntica Editora | 376 | tabela | 0 |
 | Autonomia Literária | 138 | tabela | 0 |
-| Âyiné | 181 | tabela | 0 |
+| Âyiné | 182 | tabela | 0 |
 | AzuCo Publicações | 16 | tabela | 0 |
 | Balão Editorial | 39 | tabela | 0 |
 | Barbatana | 47 | tabela | 0 |
@@ -53,7 +53,7 @@
 | Contraponto | 166 | tabela | 138 |
 | Cortez Editora | 142 | tabela | 0 |
 | Da Vinci Livros | 15 | tabela | 0 |
-| Darkside Books | 236 | tabela | 0 |
+| Darkside Books | 238 | tabela | 0 |
 | DBA Literatura | 46 | tabela | 0 |
 | Dublinense | 109 | tabela | 0 |
 | Duna Dueto Editora | 71 | posição do texto | 0 |
@@ -64,7 +64,7 @@
 | Editora Autores Associados | 333 | tabela | 0 |
 | Editora Bamboozinho | 81 | tabela | 0 |
 | Editora Bazar do Tempo | 90 | tabela | 0 |
-| Editora Biruta / Gaivota | 218 | tabela | 0 |
+| Editora Biruta / Gaivota | 219 | tabela | 0 |
 | Editora Capivara | 25 | tabela | 0 |
 | Editora Com-Arte | 134 | tabela | 0 |
 | Editora Contexto | 201 | tabela | 0 |
@@ -105,12 +105,12 @@
 | Editora UFPR | 134 | tabela | 0 |
 | Editora UFSC | 296 | tabela | 0 |
 | Editora UFV | 50 | tabela | 0 |
-| Editora Unesp | 875 | tabela | 0 |
+| Editora Unesp | 876 | tabela | 0 |
 | Editora Valentina | 65 | tabela | 0 |
 | Editora Via Verita | 99 | posição do texto | 0 |
 | Editora Viajante do Tempo | 69 | tabela | 0 |
 | Editora Vozes | 919 | tabela | 0 |
-| Editora WMF Martins Fontes | 805 | tabela | 0 |
+| Editora WMF Martins Fontes | 806 | tabela | 0 |
 | Editora Zahar | 198 | tabela | 0 |
 | Eduem | 176 | tabela | 0 |
 | EdUFABC - Editora da UFABC | 20 | tabela | 0 |
@@ -159,7 +159,7 @@
 | Matrix Editora | 727 | tabela | 0 |
 | Moinhos | 90 | tabela | 0 |
 | Monolito | 54 | tabela | 1 |
-| Mundaréu / Manjuba | 0 | posição do texto | 0 |
+| Mundaréu / Manjuba | 2 | posição do texto | 0 |
 | N-1 Edições | 96 | tabela | 0 |
 | NewPOP Editora | 338 | tabela | 0 |
 | Nova Fronteira | 166 | tabela | 0 |
@@ -204,7 +204,7 @@
 | VR Editora / Plataforma 21 / Latitude | 226 | tabela | 0 |
 | Zagodoni | 153 | tabela | 1 |
 | Zapata Edições | 23 | tabela | 0 |
-| Zouk | 198 | tabela | 0 |
+| Zouk | 199 | tabela | 0 |
 
 ## Divergências (amostra de até 5 por editora)
 

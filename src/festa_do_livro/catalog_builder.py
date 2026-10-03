@@ -134,7 +134,7 @@ def catalog_books(publishers: list[Publisher], parsed_by_index: dict[int, Parsed
         exhibitor_name = publishers[publisher_index].name
         for parsed_book in parsed.books:
             title = tidy(parsed_book["title"])
-            if not title or re.fullmatch(r"[\d\s\-]+", title):
+            if not title or re.fullmatch(r"[\d\s\-]{5,}", title):
                 continue
             book_id = stable_book_id(parsed_book["isbn"], exhibitor_name, title)
             if (book_id, publisher_index) in seen:

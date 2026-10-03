@@ -23,7 +23,9 @@ HEADER_KEYWORDS = [
 
 
 def join_split_digits(cell: str) -> str:
-    return re.sub(r"(?<=\d)\s+(?=[\d,])", "", cell or "")
+    """Normalizes a price cell: "R$ 1 09,00" -> "R$ 109,00" and "S 44,90" (letter spilled from the next cell) -> "44,90"."""
+    cell = re.sub(r"^\s*[A-Za-z]\s+(?=(?:R\$\s*)?\d)", "", cell or "")
+    return re.sub(r"(?<=\d)\s+(?=[\d,])", "", cell)
 
 
 def isbn_in_cell(cell: str) -> str:
@@ -116,8 +118,25 @@ def price_columns_by_row_length(rows: list[list[str]]) -> dict[int, set[int]]:
     return columns
 
 
+def numeric_columns_by_row_length(rows: list[list[str]]) -> dict[int, set[int]]:
+    """Columns that hold row numbers or internal codes, so a numeric title like "1984" is still read as a title."""
+    numeric_hits = collections.defaultdict(collections.Counter)
+    filled = collections.defaultdict(collections.Counter)
+    for row in rows:
+        for column, cell in enumerate(row):
+            if cell and cell.strip():
+                filled[len(row)][column] += 1
+                if INTERNAL_CODE.match(cell) or isbn_in_cell(cell):
+                    numeric_hits[len(row)][column] += 1
+    return {
+        length: {column for column, count in counts.items() if count >= 3 and numeric_hits[length][column] >= 0.8 * count}
+        for length, counts in filled.items()
+    }
+
+
 def parse_table_rows(rows: list[list[str]]) -> list[dict]:
     price_columns = price_columns_by_row_length(rows)
+    numeric_columns = numeric_columns_by_row_length(rows)
     books = []
     header = None
     for row in rows:
@@ -136,9 +155,10 @@ def parse_table_rows(rows: list[list[str]]) -> list[dict]:
             continue
         prices = [value for column in filled_price_columns for value in money_values_in_cell(row[column])]
         isbn_columns = [column for column, cell in enumerate(row) if column not in row_price_columns and isbn_in_cell(cell)]
+        row_numeric_columns = numeric_columns.get(len(row), set())
         code_columns = [
             column for column, cell in enumerate(row)
-            if column not in row_price_columns and column not in isbn_columns and INTERNAL_CODE.match(cell or "")
+            if column not in row_price_columns and column not in isbn_columns and column in row_numeric_columns and INTERNAL_CODE.match(cell or "")
         ]
         text_columns = [
             column for column, cell in enumerate(row)

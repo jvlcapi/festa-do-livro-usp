@@ -24,7 +24,7 @@ Objetivo: gerar o catálogo da Festa do Livro da USP a partir de qualquer ediç�
 **Goal**: site estático no GitHub Pages, aberto a qualquer pessoa sem conta nem convite, que lê nome/datas da edição e o catálogo publicados junto, guarda a lista no navegador por edição, compartilha a lista por link e funciona sem internet depois da primeira visita. (Substitui a página no Claude Artifact, que exigia conta no claude.ai e convite de Colaborador.)
 **Success Criteria**: o workflow publica o site com o catálogo da 27ª edição; no site publicado dá para buscar, adicionar, remover, definir orçamento, gerar o link e abrir o link em outro navegador com os mesmos livros.
 **Tests**: montagem do site com a edição atual (`tests/test_site_assembly.py`); checagem de sintaxe do script; teste manual no endereço publicado.
-**Status**: In Progress
+**Status**: Complete (falta só um teste num celular de verdade, issue #16)
 
 ## Etapa 5: Roteiro do dia do lançamento
 **Goal**: README com o passo a passo para quando a nova edição sair (detectar, rodar, conferir relatório, publicar) e liberação do repositório como público.

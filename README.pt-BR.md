@@ -27,6 +27,8 @@ Em *Minha lista*, toque em **Compartilhar lista**, escreva seu nome (opcional) e
 
 Quem abrir o link vê a sua lista com o total e os preços atuais, e pode tocar em **Adicionar estes livros à minha lista** para copiar os livros para a própria lista. O mesmo link serve para **passar a lista do celular para o computador** (ou o contrário).
 
+Os livros que vieram de uma lista compartilhada ganham uma **etiqueta colorida com o nome da lista** (por exemplo, "Lista de Ana"), com uma cor para cada lista importada. Acima dos livros, os filtros *Todos*, *Adicionados por mim* e uma etiqueta por lista mostram só os livros de cada origem, o que ajuda quando a lista fica grande.
+
 O link leva só os livros escolhidos e o nome que você digitou; ele não dá acesso a mais nada do seu aparelho.
 
 ### Quando sai a edição de um ano novo

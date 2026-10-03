@@ -24,7 +24,7 @@ Every year each publisher uploads its own price list to the fair's website, as a
 
 - **One catalog for the whole fair.** Search every publisher at once by title, author, publisher or subject; filter by stall and price range; sort by price or discount.
 - **A shopping list with the math done.** Total at the fair, savings over cover price, spending by publisher and by genre, and an optional budget meter.
-- **Share by link.** A list becomes a URL that anyone can open, see with current prices, and copy into their own list. The same link moves a list from phone to laptop.
+- **Share by link.** A list becomes a URL that anyone can open, see with current prices, and copy into their own list. The same link moves a list from phone to laptop. Imported books carry a colored tag with the name of the list they came from, one stable color per source, and the list can be filtered by source.
 - **Works offline.** After the first visit the site and the catalog stay on the device, because the signal inside the fair tent is unreliable.
 - **Ready for next year with no code changes.** The pipeline detects the current edition on its own and rebuilds the catalog and the site on a schedule.
 

@@ -1,113 +1,117 @@
-# Guia não oficial da Festa do Livro da USP
+*English · [Leia em português](README.pt-BR.md)* · **Vai à Festa do Livro?** Abra o guia: **https://jvlcapi.github.io/guia-nao-oficial-festa-do-livro/**
 
-**Abra: https://jvlcapi.github.io/guia-nao-oficial-festa-do-livro/**
+# Unofficial Guide to the USP Book Fair
 
-Busque nos preços de feira de todas as editoras da [Festa do Livro da USP](https://festadolivro.edusp.com.br) e monte sua lista de compras antes de ir: total na feira, quanto você economiza sobre o preço de capa, gasto por editora e por gênero, orçamento e lista para compartilhar.
+**Live site: https://jvlcapi.github.io/guia-nao-oficial-festa-do-livro/** (in Portuguese)
 
-Feito por leitores, de graça e de código aberto. **Não é um site oficial da Edusp nem da USP**; os preços vêm das tabelas que as editoras publicam no site oficial e podem mudar até a Festa. Confira no estande.
+A searchable price catalog and shopping-list planner for the [Festa do Livro da USP](https://festadolivro.edusp.com.br), the yearly book fair at the University of São Paulo where around 190 publishers sell their catalogs at half the cover price or less.
 
-## Para quem vai à Festa
+| | |
+|---|---|
+| Books in the catalog | **34,780** |
+| Publisher price lists parsed | **191** (PDFs in dozens of different layouts) |
+| Prices checked against the source PDF | every book with an ISBN; 158 flagged for review |
+| Backend, accounts, API keys | **none** |
+| Hosting cost | **zero** (GitHub Pages + GitHub Actions) |
 
-Não precisa de conta, cadastro nem instalar nada. É só abrir o link acima no celular ou no computador.
+Community project, not affiliated with Edusp or the University of São Paulo. Prices come from the lists publishers post on the official site and may change before the fair.
 
-1. **Busque livros** na aba *Catálogo da feira*: por título, autor, editora ou assunto. Dá para filtrar por editora (estande) e por faixa de preço, e ordenar por menor preço ou maior desconto.
-2. **Toque em Adicionar** nos livros que você quer.
-3. **Veja a conta** na aba *Minha lista*: total na feira, economia sobre o preço de capa, gasto por editora e por gênero. Se quiser, defina um orçamento e acompanhe quanto ainda sobra.
-4. **Leve para a feira.** Abra o site uma vez com internet: depois disso ele funciona mesmo sem sinal, dentro da tenda. No celular, use *Adicionar à tela inicial* para abrir como um aplicativo.
+## The problem
 
-### Onde fica a minha lista
+Every year each publisher uploads its own price list to the fair's website, as a PDF. There is no single place to search across publishers, compare editions, or add up what a shopping list will cost. The PDFs follow no common format: some are real tables, some are text laid out to look like tables, columns are cut off, numbers spill into neighbouring cells, and a few lists only give the cover price plus a discount percentage.
 
-A lista fica salva **só no navegador do seu aparelho**. Nada é enviado para servidor nenhum e ninguém mais vê. Se você limpar os dados do navegador ou usar janela anônima, a lista se perde.
+## What it does
 
-### Compartilhar a lista
+- **One catalog for the whole fair.** Search every publisher at once by title, author, publisher or subject; filter by stall and price range; sort by price or discount.
+- **A shopping list with the math done.** Total at the fair, savings over cover price, spending by publisher and by genre, and an optional budget meter.
+- **Share by link.** A list becomes a URL that anyone can open, see with current prices, and copy into their own list. The same link moves a list from phone to laptop.
+- **Works offline.** After the first visit the site and the catalog stay on the device, because the signal inside the fair tent is unreliable.
+- **Ready for next year with no code changes.** The pipeline detects the current edition on its own and rebuilds the catalog and the site on a schedule.
 
-Em *Minha lista*, toque em **Compartilhar lista**, escreva seu nome (opcional) e toque em **Copiar link** ou **Enviar…**. Mande o link para quem quiser, por exemplo no WhatsApp.
-
-Quem abrir o link vê a sua lista com o total e os preços atuais, e pode tocar em **Adicionar estes livros à minha lista** para copiar os livros para a própria lista. O mesmo link serve para **passar a lista do celular para o computador** (ou o contrário).
-
-O link leva só os livros escolhidos e o nome que você digitou; ele não dá acesso a mais nada do seu aparelho.
-
-### Quando sai a edição de um ano novo
-
-O site passa a mostrar o catálogo da nova edição e a sua lista recomeça vazia. As listas de anos anteriores continuam guardadas no aparelho e aparecem num seletor de edição, só para consulta.
-
----
-
-## Para quem mantém o projeto
-
-### Como funciona
+## Architecture
 
 ```
-site oficial da Festa (API pública + PDFs de preço das editoras)
-        │  python -m festa_do_livro build        (GitHub Actions, ou local)
+official fair website (public JSON API + one PDF price list per publisher)
+        │
+        │  GitHub Actions, daily from September to December, or on demand
         ▼
-data/<edição>/catalogo.json   livros, preços e editoras
-data/<edição>/edicao.json     nome e datas da edição
-data/<edição>/relatorio.md    conferência dos preços contra os PDFs
-        │  python -m festa_do_livro assemble-site → _site/
+┌───────────────────────────────────────────────────────────────┐
+│ Python pipeline                                               │
+│  1. detect the current edition from the homepage              │
+│  2. list publishers through the API, download PDFs (cached)   │
+│  3. parse each PDF two ways, keep the more complete result    │
+│  4. verify every price against the PDF line of its ISBN       │
+│  5. write catalog + edition info + verification report        │
+└───────────────────────────────────────────────────────────────┘
+        │  commit only when data changed, then deploy
         ▼
-GitHub Pages: site/index.html + catalogo.json + edicao.json
+GitHub Pages: static HTML/CSS/JS + catalogo.json + edicao.json
         │
         ▼
-navegador de cada pessoa: busca, lista e totais (lista salva no próprio aparelho)
+visitor's browser: search, totals and the list (stored on the device)
 ```
 
-- **Edição**: `settings.json` tem `"edition": "auto"`, que usa a edição declarada na página inicial do site oficial. Para fixar uma edição, troque por exemplo para `"28-festa-do-livro-da-usp"` ou passe a variável `FESTA_EDITION`.
-- **Leitura dos PDFs**: cada lista é lida de dois jeitos (células da tabela e posição do texto) e fica o resultado mais completo. Nomes cortados pela célula são completados pelo texto do PDF.
-- **Conferência**: cada preço de capa e de feira precisa aparecer na linha do mesmo ISBN no PDF. O que não bate vai para o relatório.
-- **Site**: estático, sem servidor nem conta. A lista fica no `localStorage`, separada por edição, e os preços dela são atualizados quando o catálogo muda. O link de compartilhamento leva a edição, o nome e os identificadores dos livros no fragmento da URL (`#lista=...`), que o navegador não envia ao servidor. O `site/sw.js` guarda o site e o catálogo no aparelho (rede primeiro, cache como reserva) para funcionar sem internet.
+## Engineering decisions
 
-### Atualização automática (GitHub Actions)
+**Edition-agnostic by design.** Nothing about a specific year lives in the code. The homepage declares the current edition, the pipeline reads it, and the site reads the edition name and dates from a small `edicao.json` published next to the catalog. A fixed edition can still be pinned in `settings.json` or through an environment variable.
 
-- **Atualizar catálogo** (`atualizar-catalogo.yml`): roda pelo botão *Run workflow* (com a edição opcional) e todo dia às 6h de Brasília, de setembro a dezembro. Roda os testes, gera catálogo e relatório, mostra o relatório no resumo da execução e, se algo mudou, faz commit e publica o site.
-- **Publicar site** (`publicar-site.yml`): monta `_site/` com a edição atual (`data/edicao-atual.json`) e publica no GitHub Pages. Também roda quando `site/` ou os dados mudam por push.
-- **Testes** (`testes.yml`): em todo push e pull request.
+**Two parsers instead of one clever one.** Each PDF goes through a table-cell reader (PyMuPDF table detection) and a positional reader that clusters text spans by their x-coordinates. The pipeline keeps whichever finds more complete books. Price columns are decided per table shape, so row numbers, stall numbers and internal codes are never mistaken for prices. Author and imprint names cut off by narrow cells are completed from the PDF's raw text.
 
-### Roteiro do dia em que a lista sair
+**Every price is verified against its source.** After parsing, each book's cover and fair prices must appear on the PDF line of the same ISBN; anything else lands in a per-publisher report shown in the CI run summary. This check is what surfaced the real bugs: a "Mesa" (stall number) column read as the price of 277 books, a letter spilling from the neighbouring cell ("S 44,90") that hid 764 cover prices, and numeric titles such as *1984* and *2666* being taken for internal codes. Each one became a regression test built on the publisher's real PDF.
 
-1. Confirme a edição: `python -m festa_do_livro detect-edition` (ou veja a página de editoras no site oficial).
-2. Rode o workflow **Atualizar catálogo** (vazio = `auto`, ou informe a edição).
-3. Abra o resumo da execução e leia o relatório: total de livros, listas não lidas e divergências por editora. Editora com formato novo aparece com 0 livros ou com muitas divergências.
-4. Se precisar ajustar o leitor, corrija, adicione um teste com o PDF da editora em `tests/fixtures/price_lists/` e rode de novo.
-5. Abra o site e confira que o número e as datas da nova edição aparecem no topo.
+**No backend on purpose.** The list is the only personal data, and a shopping list fits on the visitor's own device. It lives in `localStorage`, keyed by edition. Sharing encodes the book IDs and an optional name in the URL fragment (`#lista=...`), which browsers never send to the server. The result: no accounts, no database, no personal data collected, no running costs, and nothing for the maintainer to operate.
 
-### Rodar localmente
+**Offline-first for the venue.** A small service worker uses a network-first strategy with the cache as fallback: visitors online always get the latest catalog, and the site keeps working without signal. The 6.5 MB catalog travels as about 1.5 MB gzipped, and revisits only revalidate it.
+
+**A public repository with nothing to leak.** The pipeline needs no keys: the source API is public, CI commits with the ephemeral `GITHUB_TOKEN`, and Pages deploys through OIDC. Some publisher PDFs embed links with third-party access tokens, so the catalog builder strips credential query parameters and drops cover-image URLs. A test fails the build if any tracked file matches a credential pattern, and GitHub secret scanning with push protection is enabled.
+
+**Reproducible output.** PDF library versions are pinned after finding that a newer `pypdf` splits lines differently and truncates author names. The catalog generated on the macOS development machine and on the Linux CI runner is identical.
+
+## Tech stack
+
+- **Pipeline:** Python 3.12, PyMuPDF, pypdf, pytest
+- **Site:** plain HTML, CSS and JavaScript with no framework and no build step; Service Worker, Web Share API, Clipboard API
+- **Automation and hosting:** GitHub Actions (scheduled data refresh, tests, deploy) and GitHub Pages
+
+## Tests and quality
+
+- 46 automated tests, run on every push.
+- Regression tests run on real price-list PDFs from six publishers, including the layouts that broke earlier versions of the parser.
+- Unit tests cover edition detection, API pagination, download caching, table parsing edge cases, URL sanitizing, site assembly and repository hygiene.
+- The CI run publishes a verification report: total books, lists that could not be read, and price mismatches by publisher.
+- Work is planned in milestones and issues: [project milestones](https://github.com/jvlcapi/guia-nao-oficial-festa-do-livro/milestones?state=all).
+
+## Run it locally
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e '.[test]'
 .venv/bin/pytest -q
-.venv/bin/python -m festa_do_livro detect-edition
-.venv/bin/python -m festa_do_livro build
-.venv/bin/python -m festa_do_livro assemble-site
+.venv/bin/python -m festa_do_livro detect-edition   # which edition would be used
+.venv/bin/python -m festa_do_livro build            # download, parse, verify, write data/
+.venv/bin/python -m festa_do_livro assemble-site    # build _site/ for GitHub Pages
 python3 -m http.server 8765 --bind 127.0.0.1 --directory _site
 ```
 
-O `build` baixa os PDFs para `cache/<edição>/` (fora do Git) e escreve em `data/`. Para outra edição: `--edition 28-festa-do-livro-da-usp`. Depois do último comando, o site fica em http://127.0.0.1:8765.
+The site is then at http://127.0.0.1:8765. To build another edition: `--edition 28-festa-do-livro-da-usp`.
 
-### Segredos
-
-Nenhuma chave é necessária: o site oficial e a API são públicos, o commit automático usa o `GITHUB_TOKEN` que o GitHub gera em cada execução e a publicação no Pages usa o token temporário do próprio GitHub (OIDC). O repositório tem *secret scanning* e *push protection* ligados. Se um dia for preciso uma chave (por exemplo, para notificações):
-
-1. Cadastre em *Settings → Secrets and variables → Actions*.
-2. Passe para o passo do workflow como `env: NOME: ${{ secrets.NOME }}` e leia com `os.environ` no código.
-3. Para uso local, coloque num `.env` (já ignorado pelo Git), nunca em `settings.json`.
-
-O teste `tests/test_repository_hygiene.py` falha se algum arquivo versionado tiver padrão de token ou chave, e confere que `.env` e `cache/` estão ignorados. O catálogo também descarta links com parâmetros de credencial que vêm em algumas listas de editoras.
-
-### Estrutura
+## Repository layout
 
 ```
-settings.json                 edição ("auto" ou identificador) e endereço do site oficial
+settings.json                 edition ("auto" or a fixed id) and source site address
 src/festa_do_livro/
-  fair_site.py                página inicial, API do evento e das editoras
-  price_list_download.py      download dos PDFs com cache
-  pdf_reading.py              extração de tabelas, texto e posições
-  table_parser.py             leitor por células da tabela
-  position_parser.py          leitor por posição do texto
-  catalog_builder.py          limpeza, nomes completos, links seguros, catalogo.json
-  price_verification.py       conferência de preços e relatório
-  site_assembly.py            monta a pasta publicada no GitHub Pages
-site/                         site público (página, cache offline, ícone, manifesto)
-data/                         catálogos gerados (um diretório por edição)
+  fair_site.py                homepage edition detection, event and publisher API client
+  price_list_download.py      cached PDF downloads
+  pdf_reading.py              tables, raw text and text positions from PDFs
+  table_parser.py             table-cell parser
+  position_parser.py          positional parser
+  catalog_builder.py          cleanup, name repair, URL sanitizing, catalogo.json
+  price_verification.py       price checks and the report
+  site_assembly.py            folder published to GitHub Pages
+site/                         the public site (page, offline worker, icon, manifest)
+data/                         generated catalogs, one folder per edition
+tests/                        unit and regression tests, with real PDF fixtures
+.github/workflows/            catalog refresh, site deploy, tests
 ```
+
+The maintenance runbook for launch day (when the new edition's lists come out) is in the [Portuguese README](README.pt-BR.md#roteiro-do-dia-em-que-a-lista-sair).

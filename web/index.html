@@ -1,0 +1,1123 @@
+<title>Listas da Festa do Livro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: price-list sheet — two tabs (lists / the fair's catalog); a people picker on top, then the summary strip, bar panels and per-publisher tables */
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --fg: #141a2e;
+  --muted: #5a6178;
+  --line: #dde2ec;
+  --accent: #2a4fd1;
+  --accent-ink: #ffffff;
+  --accent-soft: #e4eafc;
+  --stamp: #ffd23f;
+  --stamp-ink: #2b2100;
+  --good: #11804f;
+  --warn: #b25b00;
+  --danger: #c0352b;
+  --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e111b; --surface: #161a28; --fg: #e8ebf5; --muted: #9aa1b8; --line: #2a3045;
+    --accent: #7f97ff; --accent-ink: #0e111b; --accent-soft: #232c4d; --stamp: #e9c43c; --stamp-ink: #221a00;
+    --good: #4cc98c; --warn: #f0a050; --danger: #ff7b70; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e111b; --surface: #161a28; --fg: #e8ebf5; --muted: #9aa1b8; --line: #2a3045;
+  --accent: #7f97ff; --accent-ink: #0e111b; --accent-soft: #232c4d; --stamp: #e9c43c; --stamp-ink: #221a00;
+  --good: #4cc98c; --warn: #f0a050; --danger: #ff7b70; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: grid; gap: 28px; }
+.view { display: grid; gap: 28px; min-width: 0; }
+
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; max-width: 60ch; }
+
+.tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; width: fit-content; max-width: 100%; }
+.tabs button { font: inherit; font-weight: 500; border: 0; background: transparent; color: var(--muted); padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tabs .count { font-family: var(--font-mono); font-size: 12px; opacity: .85; margin-left: 4px; }
+
+.summary { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.kpi { background: var(--surface); padding: 18px 20px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.kpi .label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.kpi .value { font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi.hero .value { font-size: 40px; color: var(--accent); }
+.kpi .sub { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.kpi .sub s { opacity: .8; }
+
+.budget { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; display: grid; gap: 10px; }
+.budget-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
+.meter { height: 10px; background: var(--accent-soft); border-radius: 999px; overflow: hidden; }
+.meter > div { height: 100%; background: var(--accent); border-radius: 999px; }
+.budget.over .meter > div { background: var(--warn); }
+
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 19px; margin: 0; }
+.bars { display: grid; gap: 12px; }
+.bar { display: grid; gap: 5px; position: relative; }
+.bar-head { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.bar-head .name { min-width: 0; overflow-wrap: anywhere; }
+.bar-head .amt { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar-head .amt span { color: var(--muted); }
+.track { height: 12px; background: var(--accent-soft); border-radius: 4px; }
+.fill { height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 4px; transition: width .4s ease; }
+.bar:hover .fill, .bar:focus-visible .fill { filter: brightness(1.12); }
+.bar:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+.tip { position: absolute; right: 0; top: -34px; background: var(--fg); color: var(--bg); font-size: 12px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .12s; font-variant-numeric: tabular-nums; }
+.bar:hover .tip, .bar:focus-visible .tip { opacity: 1; }
+
+.list { display: grid; gap: 18px; }
+#publishers { display: grid; gap: 18px; }
+.list-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.publisher { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.publisher-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+.publisher-head h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; margin: 0; }
+.publisher-head .meta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-weight: 500; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 10px 20px 8px; white-space: nowrap; }
+td { padding: 11px 20px; border-top: 1px solid var(--line); vertical-align: top; }
+tr.series-row td { background: var(--bg); font-size: 12px; font-family: var(--font-mono); color: var(--muted); padding-block: 6px; letter-spacing: .02em; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.title-cell { display: grid; gap: 2px; min-width: 220px; }
+.title-cell a { color: var(--fg); text-decoration: none; font-weight: 500; }
+.title-cell a:hover, .title-cell a:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.title-cell .title-text { font-weight: 500; }
+.title-cell .author { color: var(--muted); font-size: 13px; }
+.isbn { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--fg); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.price-cap { color: var(--muted); text-decoration: line-through; font-family: var(--font-mono); font-size: 13px; }
+.price-fair { font-family: var(--font-mono); font-weight: 500; }
+.stamp { display: inline-block; background: var(--stamp); color: var(--stamp-ink); font-family: var(--font-mono); font-size: 11px; font-weight: 500; padding: 1px 6px; border-radius: 4px; transform: rotate(-3deg); margin-left: 6px; }
+.prio { font-size: 12px; font-weight: 600; color: var(--good); }
+
+.btn { font: inherit; font-size: 13px; font-weight: 500; border-radius: 8px; padding: 6px 12px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--fg); white-space: nowrap; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.08); color: var(--accent-ink); }
+.btn.done { background: var(--accent-soft); border-color: transparent; color: var(--fg); cursor: default; }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn:disabled { opacity: .6; cursor: progress; }
+.btn.small { padding: 3px 9px; font-size: 12px; }
+.remove-cell { white-space: nowrap; text-align: right; }
+
+.search-bar { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; }
+.search-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.filters { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field label { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+input[type="search"], select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; min-width: 0; }
+input[type="search"] { font-size: 17px; }
+input[type="search"]:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.quick { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--muted); }
+.quick button { font: inherit; font-size: 13px; border: 1px dashed var(--line); background: transparent; color: var(--fg); padding: 2px 10px; border-radius: 999px; cursor: pointer; }
+.quick button:hover, .quick button:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+
+.results { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.result { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 16px; align-items: center; padding: 12px 18px; border-top: 1px solid var(--line); }
+.result:first-child { border-top: 0; }
+.result .info { display: grid; gap: 3px; min-width: 0; }
+.result .info .title-text { font-weight: 500; overflow-wrap: anywhere; }
+.result .info a.title-text { color: var(--fg); text-decoration: none; }
+.result .info a.title-text:hover, .result .info a.title-text:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.result .info .meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.result .prices { display: grid; justify-items: end; gap: 1px; font-variant-numeric: tabular-nums; }
+.results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.more { justify-self: center; }
+
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 28px 20px; color: var(--muted); text-align: center; }
+.status { font-size: 13px; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 10px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 6px 24px rgba(0,0,0,.18); }
+footer { font-size: 13px; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .summary { grid-template-columns: 1fr 1fr; }
+  .kpi.hero { grid-column: 1 / -1; }
+  .panels { grid-template-columns: 1fr; }
+  .filters { grid-template-columns: 1fr 1fr; }
+  .filters .field:first-child { grid-column: 1 / -1; }
+  .result { grid-template-columns: minmax(0, 1fr) auto; }
+  .result .action { grid-column: 1 / -1; justify-self: start; }
+}
+@media (prefers-reduced-motion: reduce) { .fill, .tip { transition: none; } }
+</style>
+<style>
+/* Shared version: a people picker above the list; only the viewer's own list is editable */
+.people { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 10px; }
+.people-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.people-head .label { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.people-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.person { font: inherit; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; max-width: 100%; }
+.person img { width: 26px; height: 26px; border-radius: 50%; flex: none; object-fit: cover; }
+.person .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.person .n { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.person[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.person:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.notice { font-size: 14px; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 14px; }
+.notice strong { color: var(--fg); font-weight: 600; }
+.budget-edit { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+.budget-edit input { font: inherit; font-family: var(--font-mono); width: 9em; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.budget-edit input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+.also { font-size: 12px; color: var(--muted); }
+.also strong { color: var(--fg); font-weight: 500; }
+.view-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.view-title img { width: 32px; height: 32px; border-radius: 50%; }
+.view-title h2 { font-size: 22px; }
+.edition-picker { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.edition-picker select { width: auto; padding: 6px 10px; font-size: 14px; }
+.share-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.share-bar .share-text { margin: 0; font-size: 14px; color: var(--muted); min-width: 0; }
+.share-bar.is-shared { border-color: var(--good); }
+.share-bar.is-shared .share-text { color: var(--fg); }
+</style>
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="event-eyebrow">Festa do Livro da USP · listas de compras</div>
+    <h1>Listas da Festa do Livro</h1>
+    <p class="lede">Monte a sua lista com os preços de feira de todas as editoras. Só você vê a sua lista. Se quiser, compartilhe com quem tem este link.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Seções">
+    <button type="button" role="tab" id="tab-lista" aria-controls="view-lista" aria-selected="true">Listas</button>
+    <button type="button" role="tab" id="tab-catalogo" aria-controls="view-catalogo" aria-selected="false">Catálogo da feira</button>
+  </nav>
+
+  <div class="view" id="view-lista" role="tabpanel" aria-labelledby="tab-lista">
+    <section class="people" aria-label="De quem é a lista">
+      <div class="people-head">
+        <span class="label">Ver a lista de</span>
+        <span class="status" id="group-summary">Carregando…</span>
+      </div>
+      <div class="people-list" id="people-list"></div>
+      <div class="edition-picker" id="edition-picker" hidden>
+        <label for="edition-select">Edição</label>
+        <select id="edition-select"></select>
+      </div>
+    </section>
+
+    <div class="view-title">
+      <img id="view-avatar" alt="" hidden>
+      <h2 id="view-heading">Sua lista</h2>
+    </div>
+    <div class="notice" id="view-notice" hidden></div>
+
+    <section class="share-bar" id="share-bar" hidden aria-label="Compartilhamento">
+      <p class="share-text" id="share-text">Sua lista é privada. Só você vê.</p>
+      <button type="button" class="btn" id="share-button">Compartilhar minha lista</button>
+    </section>
+
+    <section class="summary" aria-label="Resumo">
+      <div class="kpi hero">
+        <span class="label">Total na feira</span>
+        <span class="value" id="kpi-total">R$ 0,00</span>
+        <span class="sub" id="kpi-total-sub">Preço de capa: <s>R$ 0,00</s></span>
+      </div>
+      <div class="kpi">
+        <span class="label">Economia</span>
+        <span class="value" id="kpi-savings">R$ 0,00</span>
+        <span class="sub" id="kpi-savings-sub">0% abaixo da capa</span>
+      </div>
+      <div class="kpi">
+        <span class="label">Livros</span>
+        <span class="value" id="kpi-count">0</span>
+        <span class="sub" id="kpi-count-sub">Nenhum livro ainda</span>
+      </div>
+      <div class="kpi">
+        <span class="label">Editoras</span>
+        <span class="value" id="kpi-publishers">0</span>
+        <span class="sub" id="kpi-publishers-sub">nenhuma ainda</span>
+      </div>
+    </section>
+
+    <section class="budget" id="budget" aria-label="Orçamento">
+      <div class="budget-row"><strong>Orçamento</strong><span id="budget-text">Sem orçamento definido</span></div>
+      <div class="meter" role="progressbar" aria-label="Orçamento usado" id="budget-meter" hidden><div id="budget-fill" style="width:0%"></div></div>
+      <form class="budget-edit" id="budget-form" hidden>
+        <label for="budget-input">Meu orçamento (R$)</label>
+        <input id="budget-input" inputmode="decimal" placeholder="ex.: 300" autocomplete="off">
+        <button type="submit" class="btn small">Salvar</button>
+      </form>
+    </section>
+
+    <section class="panels">
+      <div class="panel">
+        <h2>Gasto por editora</h2>
+        <div class="bars" id="bars-publisher"></div>
+      </div>
+      <div class="panel">
+        <h2>Gasto por gênero</h2>
+        <div class="bars" id="bars-genre"></div>
+      </div>
+    </section>
+
+    <section class="list">
+      <div class="list-head">
+        <h2>Livros escolhidos</h2>
+        <span class="status" id="status">Carregando a lista…</span>
+      </div>
+      <div id="publishers">
+        <div class="empty">A lista aparece aqui. Busque um livro na aba Catálogo da feira e toque em Adicionar.</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="view" id="view-catalogo" role="tabpanel" aria-labelledby="tab-catalogo" hidden>
+    <section class="search-bar" aria-label="Buscar no catálogo">
+      <div class="search-row">
+        <div class="field">
+          <label for="catalog-query">Buscar livro</label>
+          <input type="search" id="catalog-query" placeholder="Título, autor, editora ou assunto" autocomplete="off">
+        </div>
+      </div>
+      <div class="filters">
+        <div class="field">
+          <label for="catalog-exhibitor">Editora (estande)</label>
+          <select id="catalog-exhibitor"><option value="">Todas as editoras</option></select>
+        </div>
+        <div class="field">
+          <label for="catalog-max-price">Preço na feira</label>
+          <select id="catalog-max-price">
+            <option value="">Qualquer preço</option>
+            <option value="10">Até R$ 10</option>
+            <option value="20">Até R$ 20</option>
+            <option value="30">Até R$ 30</option>
+            <option value="50">Até R$ 50</option>
+            <option value="80">Até R$ 80</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="catalog-sort">Ordenar por</label>
+          <select id="catalog-sort">
+            <option value="relevance">Mais relevantes</option>
+            <option value="price-asc">Menor preço</option>
+            <option value="price-desc">Maior preço</option>
+            <option value="discount">Maior desconto</option>
+            <option value="title">Título (A–Z)</option>
+            <option value="popular">Mais escolhidos nas listas compartilhadas</option>
+          </select>
+        </div>
+      </div>
+      <div class="quick" id="quick-searches">
+        <span>Experimente:</span>
+        <button type="button" data-query="mangá">mangá</button>
+        <button type="button" data-query="filosofia">filosofia</button>
+        <button type="button" data-query="poesia">poesia</button>
+        <button type="button" data-query="história do brasil">história do Brasil</button>
+        <button type="button" data-query="ficção científica">ficção científica</button>
+        <button type="button" data-query="infantil">infantil</button>
+      </div>
+    </section>
+
+    <section class="list" aria-live="polite">
+      <div class="results-head">
+        <h2 id="results-title">Catálogo da feira</h2>
+        <span class="status" id="catalog-status">Abrindo o catálogo…</span>
+      </div>
+      <div id="catalog-results"></div>
+      <button type="button" class="btn more" id="catalog-more" hidden>Mostrar mais</button>
+    </section>
+  </div>
+
+  <footer id="footer">Preços tirados das tabelas que as editoras publicaram no site da Festa do Livro da USP. O valor de feira é o "preço com desconto" de cada planilha. Confira no estande: algumas tabelas podem mudar até a Festa.</footer>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script>
+/*
+ * Data layout in the Artifact database:
+ *   data/users/<personId>/<edition>   private list of one person for one edition: { livros: {id: book}, orcamento, compartilhada }
+ *   compartilhadas/<personId>         copy that person chose to share: { edicoes: { <edition>: { livros, orcamento, atualizadoEm } } }
+ * The edition comes from edicao.json, published next to catalogo.json; nothing about the edition is written in this page.
+ */
+const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const pct = new Intl.NumberFormat("pt-BR", { style: "percent", maximumFractionDigits: 0 });
+const intFormat = new Intl.NumberFormat("pt-BR");
+const collator = new Intl.Collator("pt-BR", { numeric: true, sensitivity: "base" });
+const RESULTS_PAGE_SIZE = 50;
+
+const state = {
+  event: null,
+  database: null,
+  userApi: null,
+  myId: null,
+  identityResolved: false,
+  myLists: new Map(),
+  myListsLoaded: false,
+  sharedLists: new Map(),
+  selectedId: null,
+  viewedEdition: null,
+  profiles: {},
+  canWrite: true,
+  pendingIds: new Set(),
+};
+
+let catalog = null;
+let catalogLoading = null;
+let catalogMatches = [];
+let catalogShown = 0;
+
+function el(tag, attrs = {}, children = []) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (value === undefined || value === null || value === false) continue;
+    if (key === "text") node.textContent = value;
+    else if (key === "class") node.className = value;
+    else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  for (const child of [].concat(children)) if (child) node.append(child);
+  return node;
+}
+
+function normalizeText(text) {
+  return (text || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
+function toNumber(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  const text = String(value ?? "").trim();
+  const parsed = parseFloat(text.includes(",") ? text.replace(/\./g, "").replace(",", ".") : text);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+let toastTimer = null;
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.hidden = true; }, 3200);
+}
+
+/* ---------- Edition ---------- */
+function currentEdition() {
+  return state.event?.edicao || null;
+}
+
+function editionLabel(edition) {
+  if (edition === currentEdition() && state.event?.nome) return state.event.nome.replace(/^(\d+)\s/, "$1ª ");
+  const number = String(edition || "").match(/^(\d+)/);
+  return number ? `${number[1]}ª Festa do Livro da USP` : edition;
+}
+
+function readablePeriod(period) {
+  return (period || "").replace(/^(\d+)\s+e\s+(\d+\s+de\s+)/, "de $1 a $2");
+}
+
+function renderEventTexts() {
+  if (!state.event) return;
+  const period = readablePeriod(state.event.periodo);
+  document.getElementById("event-eyebrow").textContent = [editionLabel(currentEdition()), period].filter(Boolean).join(" · ");
+  document.getElementById("footer").textContent = `Preços tirados das tabelas que as editoras publicaram para a ${editionLabel(currentEdition())}. O valor de feira é o "preço com desconto" de cada planilha. Confira no estande: algumas tabelas podem mudar até a Festa.`;
+}
+
+/* ---------- Lists ---------- */
+function parseList(data) {
+  const raw = data || {};
+  const books = Object.entries(raw.livros || {}).map(([entryId, book]) => ({
+    ...book, id: entryId, precoCapa: toNumber(book.precoCapa), precoFeira: toNumber(book.precoFeira),
+  }));
+  const budget = toNumber(raw.orcamento);
+  return { raw, books, bookIds: new Set(books.map(book => book.id)), budget: budget > 0 ? budget : null, shared: raw.compartilhada === true };
+}
+
+function myCurrentList() {
+  return state.myLists.get(currentEdition()) || null;
+}
+
+function listShown() {
+  if (state.selectedId && state.selectedId === state.myId) return state.myLists.get(state.viewedEdition) || null;
+  return state.sharedLists.get(state.selectedId)?.get(state.viewedEdition) || null;
+}
+
+function isViewingMine() {
+  return Boolean(state.myId) && state.selectedId === state.myId;
+}
+
+function isEditable() {
+  return isViewingMine() && state.canWrite && Boolean(currentEdition()) && state.viewedEdition === currentEdition();
+}
+
+/* ---------- People ---------- */
+function personName(personId) {
+  if (personId && personId === state.myId) return "Você";
+  return state.profiles[personId]?.name || "Alguém";
+}
+
+function personAvatar(personId) {
+  return state.profiles[personId]?.avatarUrl || "";
+}
+
+function sharersForEdition(edition) {
+  return [...state.sharedLists.entries()]
+    .filter(([personId, editions]) => personId !== state.myId && editions.get(edition)?.books.length)
+    .map(([personId]) => personId);
+}
+
+function peopleIds() {
+  const others = sharersForEdition(currentEdition()).sort((a, b) => collator.compare(personName(a), personName(b)));
+  return state.myId ? [state.myId, ...others] : others;
+}
+
+async function refreshProfiles() {
+  if (!state.userApi) return;
+  const ids = [...new Set([...state.sharedLists.keys(), state.myId].filter(Boolean))];
+  if (!ids.length) return;
+  const resolved = await state.userApi.profiles(ids);
+  let changed = false;
+  for (const [personId, profile] of Object.entries(resolved)) {
+    const previous = state.profiles[personId];
+    if (!previous || previous.name !== profile.name || previous.avatarUrl !== profile.avatarUrl) changed = true;
+    state.profiles[personId] = profile;
+  }
+  if (changed) renderAll();
+}
+
+function whoElseShared(bookId) {
+  return sharersForEdition(currentEdition())
+    .filter(personId => state.sharedLists.get(personId).get(currentEdition()).bookIds.has(bookId))
+    .map(personName);
+}
+
+/* ---------- Rendering: list view ---------- */
+function sumBy(list, key) {
+  const totals = new Map();
+  for (const book of list) {
+    const groupName = book[key] || "Sem informação";
+    const current = totals.get(groupName) || { name: groupName, fair: 0, cover: 0, count: 0 };
+    current.fair += book.precoFeira; current.cover += book.precoCapa; current.count += 1;
+    totals.set(groupName, current);
+  }
+  return [...totals.values()].sort((a, b) => b.fair - a.fair);
+}
+
+function renderPeople() {
+  const container = document.getElementById("people-list");
+  const ids = peopleIds();
+  if (!ids.length) {
+    container.replaceChildren(el("span", { class: "status", text: state.identityResolved ? "Ninguém compartilhou uma lista ainda." : "Carregando…" }));
+  } else {
+    container.replaceChildren(...ids.map(personId => {
+      const list = personId === state.myId ? myCurrentList() : state.sharedLists.get(personId)?.get(currentEdition());
+      const avatar = personAvatar(personId);
+      return el("button", {
+        type: "button", class: "person", "aria-pressed": String(personId === state.selectedId),
+        onclick: () => { state.selectedId = personId; state.viewedEdition = currentEdition(); renderAll(); },
+      }, [
+        avatar ? el("img", { src: avatar, alt: "" }) : null,
+        el("span", { class: "who", text: personName(personId) }),
+        el("span", { class: "n", text: String(list?.books.length || 0) }),
+      ]);
+    }));
+  }
+  const sharerCount = sharersForEdition(currentEdition()).length;
+  document.getElementById("group-summary").textContent = sharerCount
+    ? `${sharerCount} ${sharerCount === 1 ? "pessoa compartilhou a lista" : "pessoas compartilharam a lista"}`
+    : "As listas são privadas; aparecem aqui as que forem compartilhadas";
+
+  const editions = [...new Set([currentEdition(), ...state.myLists.keys()].filter(Boolean))]
+    .sort((a, b) => (parseInt(b, 10) || 0) - (parseInt(a, 10) || 0));
+  const picker = document.getElementById("edition-picker");
+  picker.hidden = !(isViewingMine() && editions.length > 1);
+  if (!picker.hidden) {
+    const select = document.getElementById("edition-select");
+    select.replaceChildren(...editions.map(edition => el("option", { value: edition, text: edition === currentEdition() ? `${editionLabel(edition)} (atual)` : editionLabel(edition) })));
+    select.value = state.viewedEdition || currentEdition();
+  }
+}
+
+function renderViewHeader() {
+  const heading = document.getElementById("view-heading");
+  const avatar = document.getElementById("view-avatar");
+  const notice = document.getElementById("view-notice");
+  const selected = state.selectedId;
+  heading.textContent = isViewingMine() ? "Sua lista" : selected ? `Lista de ${personName(selected)}` : "Listas";
+  const avatarUrl = selected && !isViewingMine() ? personAvatar(selected) : "";
+  avatar.hidden = !avatarUrl;
+  if (avatarUrl) avatar.src = avatarUrl;
+
+  let message = null;
+  if (state.identityResolved && !state.myId) {
+    message = [el("strong", { text: "Você está só olhando. " }), "Para montar a sua lista, abra este link conectado à sua conta do claude.ai."];
+  } else if (state.myId && !state.canWrite) {
+    message = [el("strong", { text: "Você pode ver as listas compartilhadas, mas não pode montar a sua. " }), "Peça a quem compartilhou o link um acesso de Colaborador."];
+  } else if (isViewingMine() && state.viewedEdition && state.viewedEdition !== currentEdition()) {
+    message = [el("strong", { text: `Lista da ${editionLabel(state.viewedEdition)}. ` }), "É de uma edição anterior: fica guardada só para consulta, com os preços daquela época."];
+  } else if (selected && !isViewingMine()) {
+    message = [`${personName(selected)} compartilhou esta lista. Só ela pode mudá-la; o que você adicionar no catálogo vai para a `, el("strong", { text: "sua" }), " lista."];
+  }
+  notice.hidden = !message;
+  if (message) notice.replaceChildren(...message);
+
+  const shareBar = document.getElementById("share-bar");
+  shareBar.hidden = !isEditable();
+  if (!shareBar.hidden) {
+    const shared = myCurrentList()?.shared === true;
+    shareBar.classList.toggle("is-shared", shared);
+    document.getElementById("share-text").textContent = shared
+      ? "Sua lista está compartilhada: quem tem o link desta página vê os livros e o total."
+      : "Sua lista é privada. Só você vê.";
+    const button = document.getElementById("share-button");
+    button.textContent = shared ? "Parar de compartilhar" : "Compartilhar minha lista";
+  }
+}
+
+function renderSummary(books, budgetValue) {
+  const totalFair = books.reduce((sum, book) => sum + book.precoFeira, 0);
+  const totalCover = books.reduce((sum, book) => sum + book.precoCapa, 0);
+  const savings = totalCover - totalFair;
+  const publishers = sumBy(books, "editora");
+  document.getElementById("kpi-total").textContent = brl.format(totalFair);
+  document.getElementById("kpi-total-sub").replaceChildren("Preço de capa: ", el("s", { text: brl.format(totalCover) }));
+  document.getElementById("kpi-savings").textContent = brl.format(savings);
+  document.getElementById("kpi-savings-sub").textContent = totalCover ? `${pct.format(savings / totalCover)} abaixo da capa` : "0% abaixo da capa";
+  document.getElementById("kpi-count").textContent = books.length;
+  document.getElementById("kpi-count-sub").textContent = books.length ? `Média de ${brl.format(totalFair / books.length)} cada` : "Nenhum livro ainda";
+  document.getElementById("kpi-publishers").textContent = publishers.length;
+  document.getElementById("kpi-publishers-sub").textContent = publishers.length ? publishers.map(p => p.name).join(", ") : "nenhuma ainda";
+
+  const budget = document.getElementById("budget");
+  const meter = document.getElementById("budget-meter");
+  const form = document.getElementById("budget-form");
+  const editable = isEditable();
+  const hasBudget = typeof budgetValue === "number" && budgetValue > 0;
+  budget.hidden = !hasBudget && !editable;
+  form.hidden = !editable;
+  meter.hidden = !hasBudget;
+  if (hasBudget) {
+    const used = totalFair / budgetValue;
+    budget.classList.toggle("over", used > 1);
+    document.getElementById("budget-text").textContent = used > 1
+      ? `${brl.format(totalFair)} de ${brl.format(budgetValue)} · passou ${brl.format(totalFair - budgetValue)}`
+      : `${brl.format(totalFair)} de ${brl.format(budgetValue)} · sobram ${brl.format(budgetValue - totalFair)}`;
+    document.getElementById("budget-fill").style.width = `${Math.min(used, 1) * 100}%`;
+    meter.setAttribute("aria-valuenow", Math.round(used * 100));
+  } else {
+    budget.classList.remove("over");
+    document.getElementById("budget-text").textContent = "Sem orçamento definido";
+  }
+  const input = document.getElementById("budget-input");
+  if (editable && document.activeElement !== input) input.value = hasBudget ? String(budgetValue).replace(".", ",") : "";
+}
+
+function renderBars(containerId, groups) {
+  const container = document.getElementById(containerId);
+  if (!groups.length) {
+    container.replaceChildren(el("p", { class: "status", text: "Aparece quando houver livros na lista." }));
+    return;
+  }
+  const max = groups[0].fair;
+  container.replaceChildren(...groups.map(group => {
+    const bookWord = group.count === 1 ? "livro" : "livros";
+    return el("div", { class: "bar", tabindex: "0", "aria-label": `${group.name}: ${brl.format(group.fair)}, ${group.count} ${bookWord}` }, [
+      el("div", { class: "bar-head" }, [
+        el("span", { class: "name", text: group.name }),
+        el("span", { class: "amt" }, [brl.format(group.fair), el("span", { text: ` · ${group.count} ${bookWord}` })]),
+      ]),
+      el("div", { class: "track" }, el("div", { class: "fill", style: `width:${(group.fair / max) * 100}%` })),
+      el("div", { class: "tip", text: `Capa ${brl.format(group.cover)} → feira ${brl.format(group.fair)}` }),
+    ]);
+  }));
+}
+
+function removeButton(book) {
+  if (!isEditable()) return null;
+  const button = el("button", { type: "button", class: "btn small", text: "Remover", "aria-label": `Remover ${book.titulo} da sua lista` });
+  let confirming = false;
+  button.addEventListener("click", async () => {
+    if (!confirming) {
+      confirming = true;
+      button.textContent = "Confirmar";
+      button.classList.add("danger");
+      setTimeout(() => { if (confirming && button.isConnected) { confirming = false; button.textContent = "Remover"; button.classList.remove("danger"); } }, 4000);
+      return;
+    }
+    button.disabled = true;
+    try {
+      await removeFromMyList(book.id);
+      showToast(`Removido: ${book.titulo}`);
+    } catch (error) {
+      button.disabled = false;
+      handleWriteError(error, "remover");
+    }
+  });
+  return button;
+}
+
+function renderList(books) {
+  const container = document.getElementById("publishers");
+  if (!books.length) {
+    const text = isViewingMine()
+      ? (isEditable() ? "Sua lista está vazia. Vá na aba Catálogo da feira, busque um livro e toque em Adicionar." : "Nenhum livro nesta lista.")
+      : "Esta lista ainda não tem livros.";
+    container.replaceChildren(el("div", { class: "empty", text }));
+    return;
+  }
+  const byPublisher = sumBy(books, "editora");
+  container.replaceChildren(...byPublisher.map(publisher => {
+    const publisherBooks = books
+      .filter(book => (book.editora || "Sem informação") === publisher.name)
+      .sort((a, b) => collator.compare(a.titulo, b.titulo));
+    const rows = publisherBooks.map(book => {
+      const discount = book.precoCapa ? 1 - book.precoFeira / book.precoCapa : 0;
+      const titleNode = book.url ? el("a", { href: book.url, target: "_blank", rel: "noopener", text: book.titulo }) : el("span", { class: "title-text", text: book.titulo });
+      return el("tr", {}, [
+        el("td", {}, el("div", { class: "title-cell" }, [
+          titleNode,
+          el("span", { class: "author", text: [book.autor, book.selo].filter(Boolean).join(" · ") }),
+          el("span", { class: "isbn", text: /^\d{10,13}$/.test(book.id) ? `ISBN ${book.id}` : "" }),
+        ])),
+        el("td", {}, el("div", { class: "chips" }, [book.genero].filter(Boolean).map(tag => el("span", { class: "chip", text: tag, title: tag })))),
+        el("td", { class: "num" }, book.precoCapa > book.precoFeira ? el("span", { class: "price-cap", text: brl.format(book.precoCapa) }) : null),
+        el("td", { class: "num" }, [el("span", { class: "price-fair", text: brl.format(book.precoFeira) }), discount > 0.005 ? el("span", { class: "stamp", text: `−${pct.format(discount)}` }) : null]),
+        el("td", { class: "remove-cell" }, removeButton(book)),
+      ]);
+    });
+    return el("article", { class: "publisher" }, [
+      el("div", { class: "publisher-head" }, [
+        el("h3", { text: publisher.name }),
+        el("span", { class: "meta", text: `${publisher.count} ${publisher.count === 1 ? "livro" : "livros"} · ${brl.format(publisher.fair)} na feira` }),
+      ]),
+      el("div", { class: "table-scroll" }, el("table", {}, [
+        el("thead", {}, el("tr", {}, [
+          el("th", { text: "Livro" }), el("th", { text: "Gênero" }),
+          el("th", { class: "num", text: "Capa" }), el("th", { class: "num", text: "Na feira" }), el("th", { "aria-label": "Ações" }),
+        ])),
+        el("tbody", {}, rows),
+      ])),
+    ]);
+  }));
+}
+
+function renderAll() {
+  if (!state.selectedId) state.selectedId = state.myId || peopleIds()[0] || null;
+  if (!state.viewedEdition) state.viewedEdition = currentEdition();
+  const list = listShown();
+  const books = list?.books || [];
+  renderEventTexts();
+  renderPeople();
+  renderViewHeader();
+  renderSummary(books, list?.budget ?? null);
+  renderBars("bars-publisher", sumBy(books, "editora"));
+  renderBars("bars-genre", sumBy(books, "genero"));
+  renderList(books);
+  const loading = isViewingMine() && !state.myListsLoaded && state.identityResolved && state.myId;
+  document.getElementById("status").textContent = loading
+    ? "Carregando a lista…"
+    : books.length ? `${books.length} ${books.length === 1 ? "livro" : "livros"}, organizados por editora` : "Nenhum livro ainda";
+  if (catalog) renderCatalogPage(false);
+}
+
+/* ---------- Writes: only the viewer's own private list and own shared copy ---------- */
+let writeChain = Promise.resolve();
+function queueWrite(task) {
+  const run = writeChain.then(task);
+  writeChain = run.catch(() => {});
+  return run;
+}
+
+function myListRef() {
+  return state.database.doc(`data/users/${state.myId}/${currentEdition()}`);
+}
+
+function mySharedRef() {
+  return state.database.doc(`compartilhadas/${state.myId}`);
+}
+
+async function writeSharedCopy(privateRaw) {
+  const existing = state.sharedLists.get(state.myId);
+  const editions = {};
+  if (existing) for (const [edition, list] of existing) editions[edition] = list.raw;
+  editions[currentEdition()] = { livros: privateRaw.livros || {}, orcamento: privateRaw.orcamento ?? null, atualizadoEm: new Date().toISOString() };
+  await mySharedRef().set({ edicoes: editions });
+}
+
+async function removeSharedCopy() {
+  const existing = state.sharedLists.get(state.myId);
+  const editions = {};
+  if (existing) for (const [edition, list] of existing) if (edition !== currentEdition()) editions[edition] = list.raw;
+  if (Object.keys(editions).length) await mySharedRef().set({ edicoes: editions });
+  else await mySharedRef().delete();
+}
+
+function replaceMyList(transform) {
+  return queueWrite(async () => {
+    const now = new Date().toISOString();
+    const current = myCurrentList();
+    const base = current ? { ...current.raw } : { livros: {}, compartilhada: false, criadoEm: now };
+    const next = transform({ ...base, livros: { ...(base.livros || {}) } });
+    next.atualizadoEm = now;
+    await myListRef().set(next);
+    if (next.compartilhada) await writeSharedCopy(next);
+    return next;
+  });
+}
+
+function addToMyList(entryId, entry) {
+  return replaceMyList(list => { list.livros[entryId] = entry; return list; });
+}
+
+function removeFromMyList(entryId) {
+  return replaceMyList(list => { delete list.livros[entryId]; return list; });
+}
+
+function saveMyBudget(value) {
+  return replaceMyList(list => { list.orcamento = value; return list; });
+}
+
+function setSharing(shouldShare) {
+  return queueWrite(async () => {
+    const now = new Date().toISOString();
+    const current = myCurrentList();
+    const next = { ...(current ? current.raw : { livros: {}, criadoEm: now }), compartilhada: shouldShare, atualizadoEm: now };
+    await myListRef().set(next);
+    if (shouldShare) await writeSharedCopy(next);
+    else await removeSharedCopy();
+  });
+}
+
+function handleWriteError(error, action) {
+  const code = error?.code || "erro";
+  if (code === "invalid_argument" || code === "permission_denied" || code === "not_granted") {
+    state.canWrite = false;
+    renderAll();
+    showToast("Você não tem permissão para montar uma lista aqui. Peça acesso de Colaborador a quem compartilhou o link.");
+  } else if (code === "quota_exceeded") {
+    showToast("A lista ficou grande demais para salvar. Remova alguns livros e tente de novo.");
+  } else {
+    showToast(`Não foi possível ${action} (${code}). Tente de novo.`);
+  }
+}
+
+document.getElementById("share-button").addEventListener("click", async event => {
+  const button = event.currentTarget;
+  const shouldShare = !(myCurrentList()?.shared === true);
+  button.disabled = true;
+  try {
+    await setSharing(shouldShare);
+    showToast(shouldShare ? "Lista compartilhada com quem tem o link." : "Sua lista voltou a ser privada.");
+  } catch (error) {
+    handleWriteError(error, shouldShare ? "compartilhar" : "parar de compartilhar");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.getElementById("budget-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!state.myId || !state.database || !currentEdition()) return;
+  const raw = document.getElementById("budget-input").value.trim();
+  const value = raw ? toNumber(raw) : 0;
+  if (raw && !(value > 0)) { showToast("Digite um valor em reais, por exemplo 300 ou 250,50."); return; }
+  try {
+    await saveMyBudget(value > 0 ? value : null);
+    showToast(value > 0 ? `Orçamento salvo: ${brl.format(value)}` : "Orçamento removido");
+  } catch (error) {
+    handleWriteError(error, "salvar o orçamento");
+  }
+});
+
+document.getElementById("edition-select").addEventListener("change", event => {
+  state.viewedEdition = event.target.value;
+  renderAll();
+});
+
+/* ---------- Tabs ---------- */
+function selectTab(name) {
+  const isCatalog = name === "catalogo";
+  document.getElementById("tab-lista").setAttribute("aria-selected", String(!isCatalog));
+  document.getElementById("tab-catalogo").setAttribute("aria-selected", String(isCatalog));
+  document.getElementById("view-lista").hidden = isCatalog;
+  document.getElementById("view-catalogo").hidden = !isCatalog;
+  try { localStorage.setItem("festa-listas-tab", name); } catch (error) {}
+  if (isCatalog) {
+    loadCatalog();
+    setTimeout(() => document.getElementById("catalog-query").focus({ preventScroll: true }), 0);
+  }
+}
+document.getElementById("tab-lista").addEventListener("click", () => selectTab("lista"));
+document.getElementById("tab-catalogo").addEventListener("click", () => selectTab("catalogo"));
+
+/* ---------- Catalog ---------- */
+function loadCatalog() {
+  if (catalogLoading) return catalogLoading;
+  document.getElementById("catalog-status").textContent = "Abrindo o catálogo…";
+  catalogLoading = fetch("catalogo.json")
+    .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+    .then(data => {
+      const exhibitors = data.expositores;
+      catalog = {
+        exhibitors,
+        books: data.livros.map(book => {
+          const exhibitor = exhibitors[book.x]?.nome || "";
+          return { ...book, exhibitor, haystack: normalizeText(`${book.t} ${book.a || ""} ${book.s || ""} ${exhibitor} ${book.g || ""} ${book.i}`), titleKey: normalizeText(book.t) };
+        }),
+      };
+      const select = document.getElementById("catalog-exhibitor");
+      const counts = new Map();
+      for (const book of catalog.books) counts.set(book.x, (counts.get(book.x) || 0) + 1);
+      const options = exhibitors
+        .map((exhibitor, index) => ({ index, name: exhibitor.nome, count: counts.get(index) || 0 }))
+        .filter(option => option.count > 0)
+        .sort((a, b) => collator.compare(a.name, b.name));
+      select.append(...options.map(option => el("option", { value: String(option.index), text: `${option.name} (${intFormat.format(option.count)})` })));
+      restoreCatalogFilters();
+      runSearch();
+    })
+    .catch(error => {
+      catalogLoading = null;
+      document.getElementById("catalog-status").textContent = `Não foi possível abrir o catálogo (${error.message}). Recarregue a página.`;
+    });
+  return catalogLoading;
+}
+
+function currentFilters() {
+  return {
+    query: document.getElementById("catalog-query").value.trim(),
+    exhibitor: document.getElementById("catalog-exhibitor").value,
+    maxPrice: document.getElementById("catalog-max-price").value,
+    sort: document.getElementById("catalog-sort").value,
+  };
+}
+
+function restoreCatalogFilters() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("festa-listas-filters") || "null");
+    if (!saved) return;
+    document.getElementById("catalog-query").value = saved.query || "";
+    document.getElementById("catalog-exhibitor").value = saved.exhibitor || "";
+    document.getElementById("catalog-max-price").value = saved.maxPrice || "";
+    document.getElementById("catalog-sort").value = saved.sort || "relevance";
+  } catch (error) {}
+}
+
+function popularity(bookId) {
+  let count = myCurrentList()?.bookIds.has(bookId) ? 1 : 0;
+  for (const personId of sharersForEdition(currentEdition())) {
+    if (state.sharedLists.get(personId).get(currentEdition()).bookIds.has(bookId)) count += 1;
+  }
+  return count;
+}
+
+function discountOf(book) {
+  return book.c ? 1 - book.f / book.c : 0;
+}
+
+function runSearch() {
+  if (!catalog) return;
+  const filters = currentFilters();
+  try { localStorage.setItem("festa-listas-filters", JSON.stringify(filters)); } catch (error) {}
+  const terms = normalizeText(filters.query).split(/\s+/).filter(Boolean);
+  const maxPrice = filters.maxPrice ? Number(filters.maxPrice) : Infinity;
+  const exhibitorIndex = filters.exhibitor === "" ? null : Number(filters.exhibitor);
+  const popularOnly = filters.sort === "popular";
+  const hasFilter = terms.length || exhibitorIndex !== null || filters.maxPrice || popularOnly;
+
+  if (!hasFilter) {
+    catalogMatches = [];
+    catalogShown = 0;
+    document.getElementById("results-title").textContent = "Catálogo da feira";
+    document.getElementById("catalog-status").textContent = `${intFormat.format(catalog.books.length)} livros de ${catalog.exhibitors.length} editoras`;
+    document.getElementById("catalog-results").replaceChildren(el("div", { class: "empty", text: "Digite um título, autor, editora ou assunto para buscar. Você também pode escolher só uma editora, uma faixa de preço ou ver os mais escolhidos nas listas compartilhadas." }));
+    document.getElementById("catalog-more").hidden = true;
+    return;
+  }
+
+  const matches = [];
+  for (const book of catalog.books) {
+    if (book.f > maxPrice) continue;
+    if (exhibitorIndex !== null && book.x !== exhibitorIndex) continue;
+    let ok = true;
+    for (const term of terms) { if (!book.haystack.includes(term)) { ok = false; break; } }
+    if (!ok) continue;
+    const picks = popularOnly ? popularity(book.i) : 0;
+    if (popularOnly && !picks) continue;
+    let score = 0;
+    if (terms.length) {
+      if (terms.every(term => book.titleKey.includes(term))) score += 2;
+      if (book.titleKey.startsWith(terms[0])) score += 1;
+    }
+    matches.push({ book, score, picks });
+  }
+  const sorters = {
+    relevance: (a, b) => b.score - a.score || a.book.f - b.book.f,
+    "price-asc": (a, b) => a.book.f - b.book.f,
+    "price-desc": (a, b) => b.book.f - a.book.f,
+    discount: (a, b) => discountOf(b.book) - discountOf(a.book) || a.book.f - b.book.f,
+    title: (a, b) => collator.compare(a.book.t, b.book.t),
+    popular: (a, b) => b.picks - a.picks || a.book.f - b.book.f,
+  };
+  matches.sort(sorters[filters.sort] || sorters.relevance);
+  catalogMatches = matches.map(match => match.book);
+  catalogShown = 0;
+  document.getElementById("results-title").textContent = "Resultados";
+  document.getElementById("catalog-status").textContent = catalogMatches.length
+    ? `${intFormat.format(catalogMatches.length)} ${catalogMatches.length === 1 ? "livro encontrado" : "livros encontrados"}`
+    : "Nenhum livro encontrado";
+  renderCatalogPage(true);
+}
+
+function addButton(book) {
+  if (myCurrentList()?.bookIds.has(book.i)) return el("button", { type: "button", class: "btn done", disabled: "", text: "Na sua lista ✓" });
+  if (!state.myId || !state.canWrite || !state.database || !currentEdition()) return null;
+  const pending = state.pendingIds.has(book.i);
+  return el("button", {
+    type: "button", class: "btn primary", text: pending ? "Adicionando…" : "Adicionar", disabled: pending ? "" : null,
+    "aria-label": `Adicionar ${book.t} à sua lista`,
+    onclick: () => addFromCatalog(book),
+  });
+}
+
+async function addFromCatalog(book) {
+  state.pendingIds.add(book.i);
+  renderCatalogPage(false);
+  const entry = {
+    isbn: /^\d{10,13}$/.test(book.i) ? book.i : "",
+    titulo: book.t,
+    autor: book.a || "",
+    editora: book.exhibitor,
+    precoCapa: book.c || book.f,
+    precoFeira: book.f,
+    genero: book.g || "",
+    url: book.u || "",
+    adicionadoEm: new Date().toISOString(),
+  };
+  if (book.s) entry.selo = book.s;
+  try {
+    await addToMyList(book.i, entry);
+    showToast(`Adicionado à sua lista: ${book.t} · ${brl.format(book.f)}`);
+  } catch (error) {
+    handleWriteError(error, "adicionar");
+  } finally {
+    state.pendingIds.delete(book.i);
+    renderCatalogPage(false);
+  }
+}
+
+function catalogRow(book) {
+  const discount = discountOf(book);
+  const metaParts = [book.a, book.s && book.s !== book.exhibitor ? `${book.s} (${book.exhibitor})` : book.exhibitor].filter(Boolean);
+  const titleNode = book.u
+    ? el("a", { class: "title-text", href: book.u, target: "_blank", rel: "noopener", text: book.t })
+    : el("span", { class: "title-text", text: book.t });
+  const others = whoElseShared(book.i);
+  return el("div", { class: "result" }, [
+    el("div", { class: "info" }, [
+      titleNode,
+      el("span", { class: "meta", text: metaParts.join(" · ") }),
+      book.g ? el("div", { class: "chips" }, el("span", { class: "chip", text: book.g, title: book.g })) : null,
+      others.length ? el("span", { class: "also" }, ["Na lista compartilhada de ", el("strong", { text: others.join(", ") })]) : null,
+    ]),
+    el("div", { class: "prices" }, [
+      book.c ? el("span", { class: "price-cap", text: brl.format(book.c) }) : null,
+      el("span", {}, [el("span", { class: "price-fair", text: brl.format(book.f) }), discount > 0.005 ? el("span", { class: "stamp", text: `−${pct.format(discount)}` }) : null]),
+    ]),
+    el("div", { class: "action" }, addButton(book)),
+  ]);
+}
+
+function renderCatalogPage(reset) {
+  if (!catalogMatches.length) {
+    if (reset) {
+      document.getElementById("catalog-results").replaceChildren(el("div", { class: "empty", text: "Nenhum livro com esses filtros. Tente outra palavra ou aumente o preço máximo." }));
+      document.getElementById("catalog-more").hidden = true;
+    }
+    return;
+  }
+  if (reset) catalogShown = Math.min(RESULTS_PAGE_SIZE, catalogMatches.length);
+  document.getElementById("catalog-results").replaceChildren(el("div", { class: "results" }, catalogMatches.slice(0, catalogShown).map(catalogRow)));
+  const more = document.getElementById("catalog-more");
+  const remaining = catalogMatches.length - catalogShown;
+  more.hidden = remaining <= 0;
+  more.textContent = `Mostrar mais (${intFormat.format(remaining)} restantes)`;
+}
+
+document.getElementById("catalog-more").addEventListener("click", () => {
+  catalogShown = Math.min(catalogShown + RESULTS_PAGE_SIZE, catalogMatches.length);
+  renderCatalogPage(false);
+});
+
+let searchTimer = null;
+document.getElementById("catalog-query").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(runSearch, 160);
+});
+for (const id of ["catalog-exhibitor", "catalog-max-price", "catalog-sort"]) {
+  document.getElementById(id).addEventListener("change", runSearch);
+}
+document.getElementById("quick-searches").addEventListener("click", event => {
+  const button = event.target.closest("button[data-query]");
+  if (!button) return;
+  document.getElementById("catalog-query").value = button.dataset.query;
+  runSearch();
+});
+
+/* ---------- Boot ---------- */
+renderAll();
+let initialTab = location.hash === "#catalogo" ? "catalogo" : null;
+if (!initialTab) { try { initialTab = localStorage.getItem("festa-listas-tab"); } catch (error) {} }
+if (initialTab === "catalogo") selectTab("catalogo");
+
+const eventLoading = fetch("edicao.json")
+  .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+  .then(event => { state.event = event; state.viewedEdition = event.edicao; renderAll(); })
+  .catch(error => {
+    state.canWrite = false;
+    document.getElementById("status").textContent = `Não foi possível saber qual é a edição da Festa (${error.message}). Recarregue a página.`;
+  });
+
+(async () => {
+  const [userApi, database] = await Promise.all([
+    window.claude?.use?.("user") ?? null,
+    window.claude?.use?.("db") ?? null,
+  ]);
+  state.userApi = userApi;
+  state.myId = userApi ? await userApi.id() : null;
+  state.identityResolved = true;
+  await eventLoading;
+  if (!database) {
+    state.canWrite = false;
+    renderAll();
+    document.getElementById("status").textContent = "Não foi possível carregar as listas. Abra o link conectado à sua conta do claude.ai.";
+    return;
+  }
+  state.database = database;
+  state.selectedId = state.myId || state.selectedId;
+  renderAll();
+  if (state.myId) {
+    database.collection(`data/users/${state.myId}`).onSnapshot(snapshot => {
+      state.myLists = new Map(snapshot.docs.map(doc => [doc.id, parseList(doc.data())]));
+      state.myListsLoaded = true;
+      renderAll();
+    }, error => {
+      document.getElementById("status").textContent = `Não foi possível ler a sua lista (${error.code}). Recarregue a página.`;
+    });
+  }
+  database.collection("compartilhadas").onSnapshot(snapshot => {
+    state.sharedLists = new Map(snapshot.docs.map(doc => {
+      const editions = doc.data()?.edicoes || {};
+      return [doc.id, new Map(Object.entries(editions).map(([edition, list]) => [edition, parseList(list)]))];
+    }));
+    renderAll();
+    refreshProfiles();
+    if (catalog && currentFilters().sort === "popular") runSearch();
+  }, error => {
+    document.getElementById("group-summary").textContent = `Listas compartilhadas indisponíveis (${error.code}).`;
+  });
+})();
+</script>

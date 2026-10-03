@@ -1,20 +1,49 @@
-# Festa do Livro da USP: catálogo e listas
+# Guia não oficial da Festa do Livro da USP
 
-**Site: https://jvlcapi.github.io/festa-do-livro-usp/**
+**Abra: https://jvlcapi.github.io/guia-nao-oficial-festa-do-livro/**
 
-Gera o catálogo de preços da [Festa do Livro da USP](https://festadolivro.edusp.com.br) a partir das listas que cada editora publica no site, e publica um site aberto onde qualquer pessoa monta a própria lista de compras: busca em todas as editoras, total na feira, economia sobre o preço de capa, orçamento e compartilhamento por link. Projeto independente, não oficial da Edusp.
+Busque nos preços de feira de todas as editoras da [Festa do Livro da USP](https://festadolivro.edusp.com.br) e monte sua lista de compras antes de ir: total na feira, quanto você economiza sobre o preço de capa, gasto por editora e por gênero, orçamento e lista para compartilhar.
 
-Nada da edição fica fixo no código. Quando sair a lista de um ano novo, o coletor descobre a edição sozinho (ou recebe o identificador), baixa os PDFs, lê, confere os preços, gera um catálogo novo e publica o site, tudo pelo GitHub Actions.
+Feito por leitores, de graça e de código aberto. **Não é um site oficial da Edusp nem da USP**; os preços vêm das tabelas que as editoras publicam no site oficial e podem mudar até a Festa. Confira no estande.
 
-## Como funciona
+## Para quem vai à Festa
+
+Não precisa de conta, cadastro nem instalar nada. É só abrir o link acima no celular ou no computador.
+
+1. **Busque livros** na aba *Catálogo da feira*: por título, autor, editora ou assunto. Dá para filtrar por editora (estande) e por faixa de preço, e ordenar por menor preço ou maior desconto.
+2. **Toque em Adicionar** nos livros que você quer.
+3. **Veja a conta** na aba *Minha lista*: total na feira, economia sobre o preço de capa, gasto por editora e por gênero. Se quiser, defina um orçamento e acompanhe quanto ainda sobra.
+4. **Leve para a feira.** Abra o site uma vez com internet: depois disso ele funciona mesmo sem sinal, dentro da tenda. No celular, use *Adicionar à tela inicial* para abrir como um aplicativo.
+
+### Onde fica a minha lista
+
+A lista fica salva **só no navegador do seu aparelho**. Nada é enviado para servidor nenhum e ninguém mais vê. Se você limpar os dados do navegador ou usar janela anônima, a lista se perde.
+
+### Compartilhar a lista
+
+Em *Minha lista*, toque em **Compartilhar lista**, escreva seu nome (opcional) e toque em **Copiar link** ou **Enviar…**. Mande o link para quem quiser, por exemplo no WhatsApp.
+
+Quem abrir o link vê a sua lista com o total e os preços atuais, e pode tocar em **Adicionar estes livros à minha lista** para copiar os livros para a própria lista. O mesmo link serve para **passar a lista do celular para o computador** (ou o contrário).
+
+O link leva só os livros escolhidos e o nome que você digitou; ele não dá acesso a mais nada do seu aparelho.
+
+### Quando sai a edição de um ano novo
+
+O site passa a mostrar o catálogo da nova edição e a sua lista recomeça vazia. As listas de anos anteriores continuam guardadas no aparelho e aparecem num seletor de edição, só para consulta.
+
+---
+
+## Para quem mantém o projeto
+
+### Como funciona
 
 ```
-site da Festa (API pública + PDFs das editoras)
-        │  python -m festa_do_livro build   (local ou GitHub Actions)
+site oficial da Festa (API pública + PDFs de preço das editoras)
+        │  python -m festa_do_livro build        (GitHub Actions, ou local)
         ▼
-data/<edição>/catalogo.json   ← livros, preços, editoras
-data/<edição>/edicao.json     ← nome e datas da edição
-data/<edição>/relatorio.md    ← conferência dos preços contra os PDFs
+data/<edição>/catalogo.json   livros, preços e editoras
+data/<edição>/edicao.json     nome e datas da edição
+data/<edição>/relatorio.md    conferência dos preços contra os PDFs
         │  python -m festa_do_livro assemble-site → _site/
         ▼
 GitHub Pages: site/index.html + catalogo.json + edicao.json
@@ -23,11 +52,26 @@ GitHub Pages: site/index.html + catalogo.json + edicao.json
 navegador de cada pessoa: busca, lista e totais (lista salva no próprio aparelho)
 ```
 
-- **Edição**: `settings.json` tem `"edition": "auto"`, que usa a edição declarada na página inicial do site. Para fixar uma edição, troque por exemplo para `"28-festa-do-livro-da-usp"` ou passe `FESTA_EDITION`.
+- **Edição**: `settings.json` tem `"edition": "auto"`, que usa a edição declarada na página inicial do site oficial. Para fixar uma edição, troque por exemplo para `"28-festa-do-livro-da-usp"` ou passe a variável `FESTA_EDITION`.
 - **Leitura dos PDFs**: cada lista é lida de dois jeitos (células da tabela e posição do texto) e fica o resultado mais completo. Nomes cortados pela célula são completados pelo texto do PDF.
 - **Conferência**: cada preço de capa e de feira precisa aparecer na linha do mesmo ISBN no PDF. O que não bate vai para o relatório.
+- **Site**: estático, sem servidor nem conta. A lista fica no `localStorage`, separada por edição, e os preços dela são atualizados quando o catálogo muda. O link de compartilhamento leva a edição, o nome e os identificadores dos livros no fragmento da URL (`#lista=...`), que o navegador não envia ao servidor. O `site/sw.js` guarda o site e o catálogo no aparelho (rede primeiro, cache como reserva) para funcionar sem internet.
 
-## Rodar localmente
+### Atualização automática (GitHub Actions)
+
+- **Atualizar catálogo** (`atualizar-catalogo.yml`): roda pelo botão *Run workflow* (com a edição opcional) e todo dia às 6h de Brasília, de setembro a dezembro. Roda os testes, gera catálogo e relatório, mostra o relatório no resumo da execução e, se algo mudou, faz commit e publica o site.
+- **Publicar site** (`publicar-site.yml`): monta `_site/` com a edição atual (`data/edicao-atual.json`) e publica no GitHub Pages. Também roda quando `site/` ou os dados mudam por push.
+- **Testes** (`testes.yml`): em todo push e pull request.
+
+### Roteiro do dia em que a lista sair
+
+1. Confirme a edição: `python -m festa_do_livro detect-edition` (ou veja a página de editoras no site oficial).
+2. Rode o workflow **Atualizar catálogo** (vazio = `auto`, ou informe a edição).
+3. Abra o resumo da execução e leia o relatório: total de livros, listas não lidas e divergências por editora. Editora com formato novo aparece com 0 livros ou com muitas divergências.
+4. Se precisar ajustar o leitor, corrija, adicione um teste com o PDF da editora em `tests/fixtures/price_lists/` e rode de novo.
+5. Abra o site e confira que o número e as datas da nova edição aparecem no topo.
+
+### Rodar localmente
 
 ```bash
 python3 -m venv .venv
@@ -35,47 +79,26 @@ python3 -m venv .venv
 .venv/bin/pytest -q
 .venv/bin/python -m festa_do_livro detect-edition
 .venv/bin/python -m festa_do_livro build
+.venv/bin/python -m festa_do_livro assemble-site
+python3 -m http.server 8765 --bind 127.0.0.1 --directory _site
 ```
 
-O `build` baixa os PDFs para `cache/<edição>/` (fora do Git) e escreve em `data/`. Para outra edição: `--edition 28-festa-do-livro-da-usp`.
+O `build` baixa os PDFs para `cache/<edição>/` (fora do Git) e escreve em `data/`. Para outra edição: `--edition 28-festa-do-livro-da-usp`. Depois do último comando, o site fica em http://127.0.0.1:8765.
 
-## GitHub Actions
+### Segredos
 
-- **Atualizar catálogo** (`atualizar-catalogo.yml`): roda pelo botão *Run workflow* (com a edição opcional) e todo dia às 6h de Brasília de setembro a dezembro. Roda os testes, gera catálogo e relatório, mostra o relatório no resumo da execução e, se algo mudou, faz commit e publica o site.
-- **Publicar site** (`publicar-site.yml`): monta `_site/` com a edição atual de `data/edicao-atual.json` e publica no GitHub Pages. Roda também quando `site/` ou os dados mudam por push.
-- **Testes** (`testes.yml`): em todo push e pull request.
-
-## O site
-
-- Estático, sem servidor nem conta: `site/index.html` busca `edicao.json` e `catalogo.json` e faz tudo no navegador.
-- **Lista**: salva no `localStorage` do navegador, separada por edição. Ao entrar uma edição nova, a lista recomeça e as antigas ficam para consulta. Quando o catálogo muda, os preços dos livros da lista são atualizados.
-- **Compartilhar**: gera um link com a edição, um nome opcional e os identificadores dos livros no fragmento (`#lista=...`), que o navegador não envia ao servidor. Quem abre vê a lista com os preços atuais e pode copiar os livros para a dela.
-- **Sem internet**: `site/sw.js` guarda o site e o catálogo no aparelho na primeira visita (rede primeiro, cache como reserva), para funcionar dentro da tenda da Festa.
-
-Para ver localmente: `python -m festa_do_livro assemble-site` e depois `python -m http.server 8765 --bind 127.0.0.1 --directory _site`.
-
-## Segredos
-
-Nenhuma chave é necessária: o site da Festa e a API são públicos, o commit automático usa o `GITHUB_TOKEN` que o GitHub gera em cada execução e a publicação no Pages usa o token temporário do próprio GitHub (OIDC). O repositório tem *secret scanning* e *push protection* ligados. Se um dia for preciso uma chave (por exemplo, para notificações):
+Nenhuma chave é necessária: o site oficial e a API são públicos, o commit automático usa o `GITHUB_TOKEN` que o GitHub gera em cada execução e a publicação no Pages usa o token temporário do próprio GitHub (OIDC). O repositório tem *secret scanning* e *push protection* ligados. Se um dia for preciso uma chave (por exemplo, para notificações):
 
 1. Cadastre em *Settings → Secrets and variables → Actions*.
 2. Passe para o passo do workflow como `env: NOME: ${{ secrets.NOME }}` e leia com `os.environ` no código.
-3. Para uso local, coloque num `.env` (já ignorado pelo Git) e nunca em `settings.json`.
+3. Para uso local, coloque num `.env` (já ignorado pelo Git), nunca em `settings.json`.
 
-O teste `tests/test_repository_hygiene.py` falha se algum arquivo versionado tiver padrão de token ou chave, e confere que `.env` e `cache/` estão ignorados. O catálogo também descarta links com parâmetros de credencial que vêm nas listas das editoras.
+O teste `tests/test_repository_hygiene.py` falha se algum arquivo versionado tiver padrão de token ou chave, e confere que `.env` e `cache/` estão ignorados. O catálogo também descarta links com parâmetros de credencial que vêm em algumas listas de editoras.
 
-## Roteiro do dia em que a lista sair
-
-1. Confirme a edição: `python -m festa_do_livro detect-edition` (ou veja a página de editoras no site da Festa).
-2. Rode o workflow **Atualizar catálogo** (vazio = `auto`, ou informe a edição).
-3. Abra o resumo da execução e leia o relatório: total de livros, listas não lidas e divergências por editora. Editora com formato novo aparece com 0 livros ou muitas divergências.
-4. Se precisar de ajuste no leitor, corrija, adicione um teste com o PDF da editora em `tests/fixtures/price_lists/` e rode de novo.
-5. Abra o site e confira que o nome e as datas da nova edição aparecem no topo.
-
-## Estrutura
+### Estrutura
 
 ```
-settings.json                 edição ("auto" ou identificador) e endereço do site
+settings.json                 edição ("auto" ou identificador) e endereço do site oficial
 src/festa_do_livro/
   fair_site.py                página inicial, API do evento e das editoras
   price_list_download.py      download dos PDFs com cache

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lista da Festa do Livro</title>
-<meta name="description" content="Monte sua lista de compras com os preços de feira de todas as editoras da Festa do Livro da USP. A lista fica salva só no seu aparelho.">
+<title>Guia não oficial da Festa do Livro da USP</title>
+<meta name="description" content="Guia não oficial da Festa do Livro da USP, feito por leitores: busque nos preços de feira de todas as editoras e monte sua lista de compras. A lista fica salva só no seu aparelho.">
 <meta name="theme-color" content="#2a4fd1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -218,9 +218,9 @@ footer a { color: inherit; }
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow" id="event-eyebrow">Festa do Livro da USP · lista de compras</div>
-    <h1>Lista da Festa do Livro</h1>
-    <p class="lede">Monte sua lista de compras com os preços de feira de todas as editoras. Sua lista fica salva só neste aparelho; para mandar para alguém, use Compartilhar.</p>
+    <div class="eyebrow" id="event-eyebrow">Feito por leitores · sem vínculo com a Edusp</div>
+    <h1>Guia não oficial da Festa do Livro da USP</h1>
+    <p class="lede">Busque nos preços de feira de todas as editoras e monte sua lista de compras. Feito por leitores, sem vínculo com a Edusp ou a USP. Sua lista fica salva só neste aparelho; para mandar para alguém, use Compartilhar.</p>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Seções">
@@ -382,7 +382,7 @@ footer a { color: inherit; }
 
   <footer id="footer">
     <p id="footer-source">Preços tirados das tabelas que as editoras publicaram no site da Festa do Livro da USP. O valor de feira é o "preço com desconto" de cada planilha. Confira no estande: algumas tabelas podem mudar até a Festa.</p>
-    <p>Sua lista não sai deste aparelho: não há conta nem servidor. Depois da primeira visita o site funciona sem internet. Projeto aberto em <a href="https://github.com/jvlcapi/festa-do-livro-usp">github.com/jvlcapi/festa-do-livro-usp</a>; não é um site oficial da Edusp.</p>
+    <p>Sua lista não sai deste aparelho: não há conta nem servidor. Depois da primeira visita o site funciona sem internet. Projeto aberto em <a href="https://github.com/jvlcapi/guia-nao-oficial-festa-do-livro">github.com/jvlcapi/guia-nao-oficial-festa-do-livro</a>. Este guia é feito pela comunidade e não é um site oficial da Edusp nem da USP; o site oficial é <a href="https://festadolivro.edusp.com.br">festadolivro.edusp.com.br</a>.</p>
   </footer>
 </div>
 
@@ -498,9 +498,10 @@ function readablePeriod(period) {
 
 function renderEventTexts() {
   if (!state.event) return;
-  document.getElementById("event-eyebrow").textContent = [editionLabel(currentEdition()), readablePeriod(state.event.periodo)].filter(Boolean).join(" · ");
+  const editionNumber = String(currentEdition() || "").match(/^(\d+)/);
+  document.getElementById("event-eyebrow").textContent = [editionNumber ? `${editionNumber[1]}ª edição` : "", readablePeriod(state.event.periodo), "feito por leitores"].filter(Boolean).join(" · ");
   document.getElementById("footer-source").textContent = `Preços tirados das tabelas que as editoras publicaram para a ${editionLabel(currentEdition())}. O valor de feira é o "preço com desconto" de cada planilha. Confira no estande: algumas tabelas podem mudar até a Festa.`;
-  document.title = `Lista da ${editionLabel(currentEdition())}`;
+  document.title = `Guia não oficial da ${editionLabel(currentEdition())}`;
 }
 
 /* ---------- Lists ---------- */

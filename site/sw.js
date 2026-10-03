@@ -1,6 +1,6 @@
 // Keeps the site and the catalog on the device so the list works inside the fair tent, where the signal is weak.
 // Network first: online visitors always get the latest catalog; the cache is only the offline fallback.
-const CACHE_NAME = "festa-do-livro-v1";
+const CACHE_NAME = "guia-nao-oficial-festa-do-livro-v1";
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(["./", "./index.html"])));

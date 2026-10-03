@@ -1,7 +1,7 @@
 {
-  "name": "Lista da Festa do Livro da USP",
-  "short_name": "Festa do Livro",
-  "description": "Monte sua lista de compras com os preços de feira de todas as editoras da Festa do Livro da USP.",
+  "name": "Guia não oficial da Festa do Livro da USP",
+  "short_name": "Guia da Festa",
+  "description": "Guia não oficial da Festa do Livro da USP, feito por leitores: preços de feira de todas as editoras e sua lista de compras.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",

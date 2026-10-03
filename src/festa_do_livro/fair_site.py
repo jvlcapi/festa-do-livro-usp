@@ -6,7 +6,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Callable
 
-USER_AGENT = "festa-do-livro-usp/0.1 (+https://github.com/jvlcapi/festa-do-livro-usp)"
+USER_AGENT = "guia-nao-oficial-festa-do-livro/0.1 (+https://github.com/jvlcapi/guia-nao-oficial-festa-do-livro)"
 CURRENT_EDITION_PATTERN = re.compile(r'const\s+event\s*=\s*"([^"]+)"')
 ANY_EDITION_PATTERN = re.compile(r"\b(\d+-festa-do-livro[a-z0-9\-]*)")
 PERIOD_PATTERN = re.compile(r"entre os dias ([^,.]+)", re.IGNORECASE)
